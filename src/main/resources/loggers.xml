@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+ 		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+    <import resource="db.xml"/>
+
+    <bean id="eventLogger" class="core.loggers.ConsoleEventLogger" />
+    <bean id="fileEventLogger" class="core.loggers.FileEventLogger"
+          init-method="init">
+        <constructor-arg value="target/events_log.txt" />
+    </bean>
+
+    <bean id="cacheFileEventLogger" class="core.loggers.CacheFileEventLogger"
+          destroy-method="destroy" parent="fileEventLogger">
+        <constructor-arg index="1" value="5" />
+    </bean>
+
+    <bean id="combainEventLogger" class="core.loggers.CombinedEventLogger">
+        <constructor-arg ref="combinedLoggersList"/>
+    </bean>
+
+    <util:list id="combinedLoggersList">
+        <ref bean="eventLogger"/>
+        <ref bean="fileEventLogger"/>
+        <ref bean="dbLogger"/>
+    </util:list>
+</beans>
